@@ -1,6 +1,7 @@
 package LOG;
 
 import Base.ErrorCode;
+import Base.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -43,15 +44,16 @@ public class Logger extends Log{
         }
     }
 
-    private void printAndWrite(){
+    private void printAndWrite(Exception e){
         switch (super.getLevel()){
             case STEP, INFO -> printSafe();
             case ERROR, FATAL -> printUnsafe();
         }
         try{
             logOutput.write(super.toString().getBytes());
-        } catch (IOException e) {
+        } catch (IOException ex) {
             Stack_printAndWrite(e);
+            Stack_printAndWrite(ex);
             System.exit(ErrorCode.File.WriteFailed);
         }
     }
@@ -62,24 +64,24 @@ public class Logger extends Log{
         System.err.println(super.toString());
     }
 
-    public void printAndWrite(LogLevel level, String Tag, String Context, String Supplement){
+    public void printAndWrite(LogLevel level, Tag Tag, String Context, String Supplement,Exception e){
         super.setLevel(level);
         super.setPackage(LoggerPackage);
         super.setClass(LoggerClass);
-        super.setTag(Tag);
+        super.setTag(Tag.toString());
         super.setContext(Context);
         super.setSupplement(Supplement);
-        printAndWrite();
+        printAndWrite(e);
     }
 
-    public void printAndWrite(String Tag, String Context, String Supplement){
-        printAndWrite(LogLevel.STEP,Tag,Context,Supplement);
+    public void printAndWrite(Tag Tag, String Context, String Supplement, Exception e){
+        printAndWrite(LogLevel.STEP,Tag,Context,Supplement,e);
     }
-    public void PrintAndWrite(String Tag, String Context){
-        printAndWrite(LogLevel.STEP,Tag,Context,"");
+    public void printAndWrite(Tag Tag, String Context,Exception e){
+        printAndWrite(LogLevel.STEP,Tag,Context,"",e);
     }
-    public void printAndWrite(LogLevel level, String Tag, String Context){
-        printAndWrite(level,Tag,Context,"");
+    public void printAndWrite(LogLevel level, Tag Tag, String Context,Exception e){
+        printAndWrite(level,Tag,Context,"",e);
     }
 
     public static void Stack_print(@NotNull Exception e) {
