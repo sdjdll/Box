@@ -7,6 +7,7 @@ public class Log {
 
     private LogLevel level;
     private String Package, Class, Tag, Context, Supplement;
+    private Exception e = null;
 
     protected Log(){
         this(null,null,null,null,null,null);
@@ -49,6 +50,10 @@ public class Log {
         this.Tag = Tag;
     }
 
+    public void setException(Exception e){
+        this.e = e;
+    }
+
     public void setContext(String Context) {
         this.Context = Context;
     }
@@ -79,6 +84,10 @@ public class Log {
 
     public String getSupplement() {
         return Supplement;
+    }
+
+    public Exception getException(){
+        return e;
     }
 
     @Override

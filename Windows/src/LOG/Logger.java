@@ -52,7 +52,9 @@ public class Logger extends Log{
         try{
             logOutput.write(super.toString().getBytes());
         } catch (IOException ex) {
-            Stack_printAndWrite(e);
+            if (e != null){
+                Stack_printAndWrite(e);
+            }
             Stack_printAndWrite(ex);
             System.exit(ErrorCode.File.WriteFailed);
         }
@@ -62,6 +64,7 @@ public class Logger extends Log{
     }
     private void printUnsafe(){
         System.err.println(super.toString());
+        super.getException().printStackTrace(System.err);
     }
 
     public void printAndWrite(LogLevel level, Tag Tag, String Context, String Supplement,Exception e){
@@ -71,6 +74,7 @@ public class Logger extends Log{
         super.setTag(Tag.toString());
         super.setContext(Context);
         super.setSupplement(Supplement);
+        super.setException(e);
         printAndWrite(e);
     }
 
@@ -79,6 +83,9 @@ public class Logger extends Log{
     }
     public void printAndWrite(Tag Tag, String Context,Exception e){
         printAndWrite(LogLevel.STEP,Tag,Context,"",e);
+    }
+    public void printAndWrite(LogLevel level,Tag Tag, String Context){
+        printAndWrite(level,Tag,Context,"",null);
     }
     public void printAndWrite(LogLevel level, Tag Tag, String Context,Exception e){
         printAndWrite(level,Tag,Context,"",e);
