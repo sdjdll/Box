@@ -3,6 +3,7 @@ package LOG;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/// 何意味，盒移位，荷异位
 public class Log {
 
     private LogLevel level;

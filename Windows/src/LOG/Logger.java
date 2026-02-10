@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/// 依托真正的史
 public class Logger extends Log{
     private FileOutputStream logOutput;
     private final String LoggerClass, LoggerPackage;
