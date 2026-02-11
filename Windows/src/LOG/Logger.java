@@ -5,6 +5,7 @@ import Base.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class Logger extends Log{
         if (parentDir != null && !parentDir.exists()) {
             boolean created = parentDir.mkdirs();
             if (!created) {
-                System.err.println("无法创建日志目录: " + parentDir.getAbsolutePath());
+                Stack_printAndWrite(new FileNotFoundException("Cannot Create LogDir"));
             }
         }
         if (!logFile.exists()){
@@ -75,7 +76,7 @@ public class Logger extends Log{
         super.getException().printStackTrace(System.err);
     }
 
-    public void printAndWrite(LogLevel level, Tag Tag, String Context, String Supplement,Exception e){
+    public void printAndWrite(LogLevel level, @NotNull Tag Tag, String Context, String Supplement, Exception e){
         super.setLevel(level);
         super.setPackage(LoggerPackage);
         super.setClass(LoggerClass);
