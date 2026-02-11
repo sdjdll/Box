@@ -8,56 +8,67 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Net {
     private ServerSocket ServerSocket;
-    private int connectingDevices = 0;
-    private final HashMap<Integer,Socket> DeviceSocket = new HashMap<>();
+    private final ConcurrentHashMap<Integer, Socket> DeviceSocket = new ConcurrentHashMap<>();
     private final Logger logger;
-    private final Object NetLock = new Object();
 
     public Net() {
-        logger = new Logger(NetBase.File_NetLog,this);
+        logger = new Logger(NetBase.File_NetLog, this);
 
-        try{
+        try {
             ServerSocket = new ServerSocket(NetBase.NetProt_TransIn);
         } catch (IOException e) {
-            logger.printAndWrite(LogLevel.FATAL,new NetBase.Tags.ServerSocket(), "Create ServerSocket Failed!",e);
+            logger.printAndWrite(LogLevel.FATAL, new NetBase.Tags.ServerSocket(), "Create ServerSocket Failed!", e);
             System.exit(ErrorCode.Net.CreateSocketFailed);
         }
 
-        Thread netDevicesThread = new Thread(()->{
-            Socket socket = DeviceSocket.get(connectingDevices);
+        Thread netMainThread = new Thread(() -> {
             try {
-                OutputStream socketOutput = socket.getOutputStream();
-                socket.setKeepAlive(true);
-                socketOutput.write(connectingDevices);
-                socketOutput.flush();
-            } catch (SocketException e) {
-                logger.printAndWrite(LogLevel.FATAL, new NetBase.Tags.Network(), "Connection Error", e);
-            } catch (IOException e) {
-                logger.printAndWrite(LogLevel.ERROR, new NetBase.Tags.Network(), "Failed to send message", e);
-            }
-        });
-        Thread netMainThread = new Thread(()->{
-            try {
+                int deviceIndex = 0;
                 while (true) {
-                    connectingDevices++;
-                    synchronized (NetLock){
-                        DeviceSocket.put(connectingDevices, ServerSocket.accept());
-                        logger.printAndWrite(LogLevel.INFO, new NetBase.Tags.Network(), "Device Connected!");
-                        netDevicesThread.start();
-                        NetLock.wait();
-                    }
+                    Socket socket = ServerSocket.accept();
+                    deviceIndex++;
+
+                    DeviceSocket.put(deviceIndex, socket);
+                    logger.printAndWrite(LogLevel.INFO, new NetBase.Tags.Network(), "Device " + deviceIndex + " Connected!");
+
+                    final int currentDeviceId = deviceIndex;
+                    Thread handlerThread = new Thread(() -> {
+                        handleDeviceConnection(currentDeviceId, socket);
+                    });
+                    handlerThread.start();
                 }
             } catch (IOException e) {
-                logger.printAndWrite(LogLevel.FATAL, new NetBase.Tags.Network(), "Connection Error", e);
-            } catch (InterruptedException e) {
-                logger.printAndWrite(LogLevel.INFO, new NetBase.Tags.Network(),"interruption");
+                logger.printAndWrite(LogLevel.FATAL, new NetBase.Tags.Network(), "Server Socket Error", e);
             }
         });
         netMainThread.start();
+    }
+
+    private void handleDeviceConnection(int deviceId, Socket socket) {
+        try {
+            logger.printAndWrite(LogLevel.STEP, new NetBase.Tags.Network(), "Device " + deviceId + " handler started.");
+
+            socket.setKeepAlive(true);
+
+            OutputStream socketOutput = socket.getOutputStream();
+
+            socketOutput.write(deviceId);
+            socketOutput.flush();
+
+            logger.printAndWrite(LogLevel.STEP, new NetBase.Tags.Network(), "Sent ID " + deviceId + " to device.");
+
+        } catch (SocketException e) {
+            logger.printAndWrite(LogLevel.FATAL, new NetBase.Tags.Network(), "Device " + deviceId + " Connection Error", e);
+        } catch (IOException e) {
+            logger.printAndWrite(LogLevel.ERROR, new NetBase.Tags.Network(), "Device " + deviceId + " Failed to send message", e);
+        }
+    }
+
+    public static void main(String[] args) {
+        new Net();
     }
 }

@@ -14,6 +14,13 @@ public class Logger extends Log{
     private final String LoggerClass, LoggerPackage;
     public Logger(@NotNull File logFile, @NotNull Object source) {
         super();
+        File parentDir = logFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean created = parentDir.mkdirs();
+            if (!created) {
+                System.err.println("无法创建日志目录: " + parentDir.getAbsolutePath());
+            }
+        }
         if (!logFile.exists()){
             try{
                 boolean _ = logFile.createNewFile();
