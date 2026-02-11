@@ -1,9 +1,6 @@
 package NET.DEVICES;
 
-public class Phone implements NetDevices{
-    public Phone(){
-        NetDevices.LIST__NET_DEVICES.add(this);
-    }
+public class Windows implements NetDevices {
 
     @Override
     public boolean syncingClip() {
