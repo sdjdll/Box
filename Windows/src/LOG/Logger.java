@@ -85,6 +85,10 @@ public class Logger extends Log{
         printAndWrite(e);
     }
 
+    public void printAndWrite(LogLevel level, @NotNull Tag Tag, String Context, String Supplement){
+        printAndWrite(level,Tag,Context,Supplement,null);
+    }
+
     public void printAndWrite(Tag Tag, String Context, String Supplement, Exception e){
         printAndWrite(LogLevel.STEP,Tag,Context,Supplement,e);
     }
