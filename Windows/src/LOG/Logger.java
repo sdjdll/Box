@@ -61,9 +61,7 @@ public class Logger extends Log{
         try{
             logOutput.write(super.toString().getBytes());
         } catch (IOException ex) {
-            if (e != null){
-                Stack_printAndWrite(e);
-            }
+            if (e != null) Stack_printAndWrite(e);
             Stack_printAndWrite(ex);
             System.exit(ErrorCode.File.WriteFailed);
         }
