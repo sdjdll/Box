@@ -2,16 +2,15 @@ package CLIPBOARD;
 
 import CLIPBOARD.Type.Img;
 import CLIPBOARD.Type.Text;
-import LOG.LogLevel;
 import LOG.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Base64;
 
 public class Clipboard implements Text, Img{
+    private final Logger logger;
     private String ClipObject;
     private ClipType Type;
-    private Logger logger;
 
     private final Object SyncLock = new Object();
     public Clipboard(){
@@ -21,6 +20,7 @@ public class Clipboard implements Text, Img{
     }
 
     public Clipboard(String ClipObject, ClipType Type){
+        logger = new Logger(ClipBase.ClipLog,this);
         this.ClipObject = ClipObject;
         this.Type = Type;
     }
