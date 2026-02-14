@@ -20,6 +20,10 @@ public class Clipboard implements Text, Img{
         Type = ClipType.UNKNOW;
     }
 
+    public Clipboard(String ClipObject, ClipType Type){
+        this.ClipObject = ClipObject;
+        this.Type = Type;
+    }
 
     @Override
     public byte[] getImg() {
