@@ -1,8 +1,10 @@
 package NET;
 
+import static Main.Server.MainClipboard;
 import Base.ErrorCode;
 import LOG.LogLevel;
 import LOG.Logger;
+import NET.DEVICES.NetDevice;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,8 +13,7 @@ import java.net.Socket;
 import java.util.HashMap;
 
 public class Net {
-    public final HashMap<InetAddress, Socket> Socket_Devices = new HashMap<>();
-
+    private final HashMap<InetAddress,NetDevice> NetDevices = new HashMap<>();
     private ServerSocket Socket_Server;
     private final Logger logger;
 
@@ -31,12 +32,13 @@ public class Net {
     }
 
     private void connector(){
-        for (Socket temp;;){
+        for (;;){
+            Socket temp;
             try{
                 logger.printAndWrite(LogLevel.STEP,new NetBase.Tags.ClientSocket(),"Listening connection.");
                 temp = Socket_Server.accept();
-                Socket_Devices.put(temp.getInetAddress(), temp);
-                logger.printAndWrite(LogLevel.INFO,new NetBase.Tags.ClientSocket(),"Hive connection.");
+                NetDevices.put(temp.getInetAddress(),new NetDevice(temp));
+                logger.printAndWrite(LogLevel.INFO,new NetBase.Tags.ClientSocket(),"Have connection.");
             } catch (IOException e) {
                 logger.printAndWrite(LogLevel.ERROR, new NetBase.Tags.ClientSocket(), "Connect Failed!", e);
                 continue;
