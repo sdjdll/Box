@@ -8,7 +8,7 @@ public class Main {
     private static final String localhost = "127.0.0.1";
     private static final int port = 10001;
 
-    public Main() throws IOException {
+    private static void starter() throws IOException {
         Socket socket = new Socket(localhost, port);
         System.out.println("连接成功！等待服务端消息...");
 
@@ -33,6 +33,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        new Main();
+        starter();
     }
 }

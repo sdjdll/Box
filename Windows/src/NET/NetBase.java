@@ -40,4 +40,10 @@ public class NetBase {
 
         public static final int END = 0xffffffff;
     }
+    public static class IdenData{
+        public static final byte[] TEXT = {0x0, 0x0, 0x0, 0x1};
+        public static final byte[] IMG = {0x0, 0x0, 0x0, 0x2};
+
+        public static final byte[] END = {0xf, 0xf, 0xf, 0xf};
+    }
 }

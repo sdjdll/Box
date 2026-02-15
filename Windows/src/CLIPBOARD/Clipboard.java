@@ -55,7 +55,14 @@ public class Clipboard implements Text, Img{
             Type = ClipType.TEXT;
         }
     }
-    
+
+    public ClipType getType(){
+        synchronized (SyncLock){
+            if (this.Type == null) return ClipType.UNKNOW;
+            return this.Type;
+        }
+    }
+
     public String Sync(String base64OrString){
         return switch (Type){
             case IMG -> Base64.getEncoder().encodeToString(syncImg(Base64.getDecoder().decode(base64OrString)));
@@ -63,7 +70,7 @@ public class Clipboard implements Text, Img{
             case UNKNOW -> null;
         };
     }
-    
+
     private byte[] syncImg(byte[] Img){
         synchronized (SyncLock){
             putImg(Img);
