@@ -2,10 +2,10 @@ package Base;
 
 public class ErrorCode {
     public static class File{
-        public static int CreateFailed = 0x11;
-        public static int NotFound = 0x21;
-        public static int ReadFailed = 0x31;
-        public static int WriteFailed = 0x41;
+        public static final int CreateFailed = 0x11;
+        public static final int NotFound = 0x21;
+        public static final int ReadFailed = 0x31;
+        public static final int WriteFailed = 0x41;
 
         public static int Unknown = 0x01;
     }
