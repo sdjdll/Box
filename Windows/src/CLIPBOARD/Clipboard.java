@@ -1,84 +1,52 @@
 package CLIPBOARD;
 
-import CLIPBOARD.Type.Img;
-import CLIPBOARD.Type.Text;
 import LOG.Logger;
+import NET.NetBase;
+import NET.NetData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Base64;
-
-public class Clipboard implements Text, Img{
-    private final Logger logger;
-    private String ClipObject;
-    private ClipType Type;
+public class Clipboard{
+    public boolean update = false;
 
     private final Object SyncLock = new Object();
+    private final Logger logger = new Logger(ClipBase.ClipLog, this);
+
+    private byte[] ClipObject;
+    private ClipType Type;
+
     public Clipboard(){
-        logger = new Logger(ClipBase.ClipLog,this);
         ClipObject = null;
-        Type = ClipType.UNKNOW;
+        Type = ClipType.Unknow;
     }
 
-    public Clipboard(String ClipObject, ClipType Type){
-        logger = new Logger(ClipBase.ClipLog,this);
+    public Clipboard(byte[] ClipObject, ClipType Type){
         this.ClipObject = ClipObject;
         this.Type = Type;
     }
 
-    @Override
-    public byte[] getImg() {
+    public void putClip(@NotNull NetData nd){
+        if (nd.data == ClipObject) return;
+        update = true;
         synchronized (SyncLock){
-            if (Type == ClipType.IMG) return Base64.getDecoder().decode(ClipObject);
-            else return null;
-        }
-    }
-    @Override
-    public void putImg(byte[] img) {
-        synchronized (SyncLock){
-            ClipObject = Base64.getEncoder().encodeToString(img);
-            Type = ClipType.IMG;
-        }
-    }
-
-
-    @Override
-    public String getText() {
-        synchronized (SyncLock){
-            if (Type == ClipType.TEXT) return ClipObject;
-            else return null;
-        }
-    }
-    @Override
-    public void putText(@NotNull String text) {
-        synchronized (SyncLock){
-            ClipObject = text;
-            Type = ClipType.TEXT;
+            this.ClipObject = nd.data;
+            this.Type = switch (nd.identifier) {
+                case NetBase.Identifier.ClipText -> ClipType.ClipText;
+                case NetBase.Identifier.ClipImg -> ClipType.ClipImg;
+                case NetBase.Identifier.FileAny -> ClipType.FileAny;
+                default -> ClipType.Unknow;
+            };
         }
     }
 
-    public ClipType getType(){
+    public NetData getClip(){
         synchronized (SyncLock){
-            if (this.Type == null) return ClipType.UNKNOW;
-            return this.Type;
+            update = false;
+            return new NetData(switch (this.Type) {
+                case ClipText -> NetBase.Identifier.ClipText;
+                case ClipImg -> NetBase.Identifier.ClipImg;
+                case FileAny -> NetBase.Identifier.FileAny;
+                case Unknow -> NetBase.Identifier.Unknow;
+            }, this.ClipObject);
         }
-    }
-
-    public String Sync(String base64OrString){
-        return switch (Type){
-            case IMG -> Base64.getEncoder().encodeToString(syncImg(Base64.getDecoder().decode(base64OrString)));
-            case TEXT -> syncText(base64OrString);
-            case UNKNOW -> null;
-        };
-    }
-
-    private byte[] syncImg(byte[] Img){
-        synchronized (SyncLock){
-            putImg(Img);
-            return getImg();
-        }
-    }
-    private String syncText(String text){
-        putText(text);
-        return getText();
     }
 }

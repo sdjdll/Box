@@ -1,8 +1,8 @@
 package NET;
 
-import Base.Tag;
 import NET.NetActor.Exception.ClientAdvanceDisconnect;
 import NET.NetActor.Exception.NetDataCorruption;
+import com.sun.jdi.InvalidTypeException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -10,6 +10,7 @@ import java.net.InetAddress;
 
 public class NetBase {
     public static final int PROT = 10001;
+    public static final int MAX_ERROR_TIME = 5;
     public static final File LOG = new File("./Log/Net.log");
 
     public static class Tag{
@@ -46,17 +47,13 @@ public class NetBase {
         public static final int ClipImg = 0x00010002;
         public static final int FileAny = 0x00020000;
         public static final int End = 0x0f0f0f0f;
-    }
-    public static class identify{
-//        public static final int[] Example = new int[]{起始位置，长度};
-        public static final int[] Identifier = new int[]{0, 4};
-        public static final int[] Length = new int[]{4, 4};
-        public static final int[] Data = new int[]{8, -1};
+
+        public static final int Unknow = 0xffffffff;
     }
 
-    public static @NotNull NetData getNetData(byte @NotNull [] buffer) throws ClientAdvanceDisconnect, NetDataCorruption {
-        int identifier = (buffer[0] & 0xFF) << 24 | (buffer[1] & 0xFF) << 16 | (buffer[2] & 0xFF) << 8  | (buffer[3] & 0xFF);
-        int length = (buffer[4] & 0xFF) << 24 | (buffer[5] & 0xFF) << 16 | (buffer[6] & 0xFF) << 8  | (buffer[7] & 0xFF);
+    public static @NotNull NetData getNetData(byte @NotNull [] buffer) throws ClientAdvanceDisconnect, NetDataCorruption, ArrayIndexOutOfBoundsException {
+        int identifier = bytes2Int(buffer,0);
+        int length = bytes2Int(buffer, 4);
 
         byte[] data = new byte[length];
 
@@ -70,13 +67,7 @@ public class NetBase {
         System.arraycopy(buffer, 8, data, 0, length);
 
         NetData nd = new NetData();
-        nd.setIdentifier(switch (identifier){
-            case Identifier.ClipText -> "CLIP_TEXT";
-            case Identifier.ClipImg -> "CLIP_IMG";
-            case Identifier.FileAny -> "FILE_ANY";
-            case Identifier.End -> "END";
-            default -> throw new IllegalStateException("Unexpected value: " + identifier);
-        });
+        nd.setIdentifier(identifier);
         nd.setData(data);
 
         if (!nd.VerifyLength(length)) throw new NetDataCorruption();
@@ -84,4 +75,28 @@ public class NetBase {
         return nd;
     }
 
+    public static byte[] int2Bytes(int value) {
+        byte[] result = new byte[4];
+        result[0] = (byte) ((value >> 24) & 0xFF);
+        result[1] = (byte) ((value >> 16) & 0xFF);
+        result[2] = (byte) ((value >> 8) & 0xFF);
+        result[3] = (byte) (value & 0xFF);
+        return result;
+    }
+
+    public static int bytes2Int(byte[] value) throws InvalidTypeException {
+        if (value.length != 4) throw new InvalidTypeException();
+        return (value[0] & 0xFF) << 24 | (value[1] & 0xFF) << 16 | (value[2] & 0xFF) << 8  | (value[3] & 0xFF);
+    }
+
+    public static int bytes2Int(byte @NotNull [] value, int start) throws ArrayIndexOutOfBoundsException {
+        if (start < 0 | start + 4 > value.length) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+
+        return ( value[start]     & 0xFF) << 24 |
+                (value[start + 1] & 0xFF) << 16 |
+                (value[start + 2] & 0xFF) << 8  |
+                (value[start + 3] & 0xFF);
+    }
 }

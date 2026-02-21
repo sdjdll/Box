@@ -3,17 +3,17 @@ package NET;
 import org.jetbrains.annotations.NotNull;
 
 public class NetData {
-    public String identifier;
+    public int identifier;
     public byte[] data;
     public int length;
 
     public NetData(){
-        this.identifier = null;
+        this.identifier = 0x0f0f0f0f;
         this.data = new byte[0];
         this.length = 0;
     }
 
-    public NetData(String identifier,byte @NotNull [] data){
+    public NetData(int identifier,byte @NotNull [] data){
         this.identifier = identifier;
         this.data = data;
         this.length = data.length;
@@ -24,7 +24,7 @@ public class NetData {
         this.length = data.length;
     }
 
-    public void setIdentifier(String identifier){
+    public void setIdentifier(int identifier){
         this.identifier = identifier;
     }
 

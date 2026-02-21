@@ -1,8 +1,10 @@
 package CLIPBOARD;
 
 public enum ClipType {
-    TEXT,
-    IMG,
+    ClipText,
+    ClipImg,
 
-    UNKNOW
+    FileAny,
+
+    Unknow
 }

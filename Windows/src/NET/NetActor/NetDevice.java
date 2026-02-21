@@ -33,10 +33,15 @@ public class NetDevice {
                     this.haveMessage = false;
                 }
             }
-        });
+        }).start();
     }
 
-    public void SendMessage(NetData netData){
+    public NetData ReceiveMessage(){
+        if (haveMessage) return this.DeviceData;
+        return new NetData();
+    }
 
+    public boolean SendMessage(NetData netData){
+        return netSender.send(netData);
     }
 }
