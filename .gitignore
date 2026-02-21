@@ -4,3 +4,5 @@
 /qodana.yaml
 /Windows/out/production/*
 /Windows/test/*
+/Log/Clip/Clipboard.log
+/Log/Net.log
