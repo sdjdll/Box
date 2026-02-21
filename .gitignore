@@ -1,3 +1,6 @@
 /out/**
 /*.log
 /Logs/**
+/qodana.yaml
+/Windows/out/production/*
+/Windows/test/*
