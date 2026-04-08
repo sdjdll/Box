@@ -1,4 +1,4 @@
-package sdjini.box.net.net;
+package sdjini.box.net;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

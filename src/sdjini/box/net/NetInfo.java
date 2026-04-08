@@ -1,4 +1,4 @@
-package sdjini.box.net.net;
+package sdjini.box.net;
 
 public class NetInfo {
     public static final int UDPPROT = 8686;

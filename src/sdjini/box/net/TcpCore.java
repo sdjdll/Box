@@ -1,4 +1,4 @@
-package sdjini.box.net.net;
+package sdjini.box.net;
 
 import sdjini.box.net.NetInfo;
 
