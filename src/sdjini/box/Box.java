@@ -36,7 +36,7 @@ public class Box {
 			}
 			final byte[] data = temp;
 			clients.forEach((key, client) -> {
-				if(key.equals(source.Name)) client.send(data);
+				if(!key.equals(source.Name)) client.send(data);
 			});
 		});
 	}
